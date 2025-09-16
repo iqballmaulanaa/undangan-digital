@@ -49,6 +49,7 @@ export const progress = (() => {
 
         if (loaded === total) {
             valid = false;
+            cancelProgress = null;
             document.dispatchEvent(new Event('undangan.progress.done'));
         }
     };

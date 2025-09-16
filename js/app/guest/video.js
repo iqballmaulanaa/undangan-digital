@@ -113,10 +113,6 @@ export const video = (() => {
             });
         };
 
-        if (!window.isSecureContext) {
-            return fetchBasic();
-        }
-
         return c.has(src).then((res) => {
             if (!res) {
                 return c.del(src).then(fetchBasic).then((r) => c.set(src, r));

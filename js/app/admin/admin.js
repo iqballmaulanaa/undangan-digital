@@ -8,7 +8,7 @@ import { storage } from '../../common/storage.js';
 import { session } from '../../common/session.js';
 import { offline } from '../../common/offline.js';
 import { comment } from '../components/comment.js';
-import { request, HTTP_GET, HTTP_PATCH, HTTP_PUT } from '../../connection/request.js';
+import { pool, request, HTTP_GET, HTTP_PATCH, HTTP_PUT } from '../../connection/request.js';
 
 export const admin = (() => {
 
@@ -310,7 +310,7 @@ export const admin = (() => {
     /**
      * @returns {void}
      */
-    const domLoaded = () => {
+    const pageLoaded = () => {
         lang.init();
         lang.setDefault('en');
 
@@ -346,7 +346,7 @@ export const admin = (() => {
             storage('information').clear();
         }
 
-        document.addEventListener('DOMContentLoaded', domLoaded);
+        window.addEventListener('load', () => pool.init(pageLoaded, ['gif']));
 
         return {
             util,
