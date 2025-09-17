@@ -12,6 +12,7 @@ import { session } from '../../common/session.js';
 import { offline } from '../../common/offline.js';
 import { comment } from '../components/comment.js';
 import * as confetti from '../../libs/confetti.js';
+import { pool } from '../../connection/request.js';
 
 export const guest = (() => {
 
@@ -315,7 +316,7 @@ export const guest = (() => {
     /**
      * @returns {void}
      */
-    const domLoaded = () => {
+    const pageLoaded = () => {
         lang.init();
         offline.init();
         comment.init();
@@ -359,8 +360,7 @@ export const guest = (() => {
                 img.load();
             }
 
-            // fetch after document is loaded.
-            const load = () => session.guest(params.get('k') ?? token).then(({ data }) => {
+            session.guest(params.get('k') ?? token).then(({ data }) => {
                 document.dispatchEvent(new Event('undangan.session'));
                 progress.complete('config');
 
@@ -377,8 +377,6 @@ export const guest = (() => {
                     .catch(() => progress.invalid('comment'));
 
             }).catch(() => progress.invalid('config'));
-
-            window.addEventListener('load', load);
         }
     };
 
@@ -397,7 +395,15 @@ export const guest = (() => {
             storage('comment').clear();
         }
 
-        document.addEventListener('DOMContentLoaded', domLoaded);
+        window.addEventListener('load', () => {
+            pool.init(pageLoaded, [
+                'image',
+                'video',
+                'audio',
+                'libs',
+                'gif',
+            ]);
+        });
 
         return {
             util,

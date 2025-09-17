@@ -98,23 +98,20 @@ const loadAdditionalFont = (c) => {
  * @returns {Promise<void>}
  */
 export const loader = (opt = {}) => {
+    const promises = [];
     const c = cache('libs').withForceCache();
 
-    return c.open().then(() => {
-        const promises = [];
+    if (opt?.aos ?? true) {
+        promises.push(loadAOS(c));
+    }
 
-        if (opt?.aos ?? true) {
-            promises.push(loadAOS(c));
-        }
+    if (opt?.confetti ?? true) {
+        promises.push(loadConfetti(c));
+    }
 
-        if (opt?.confetti ?? true) {
-            promises.push(loadConfetti(c));
-        }
+    if (opt?.additionalFont ?? true) {
+        promises.push(loadAdditionalFont(c));
+    }
 
-        if (opt?.additionalFont ?? true) {
-            promises.push(loadAdditionalFont(c));
-        }
-
-        return Promise.all(promises);
-    });
+    return Promise.all(promises);
 };

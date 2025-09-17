@@ -178,7 +178,7 @@ export const card = (() => {
         const data = util.convertMarkdownToHTML(util.escapeHtml(moreMaxLength ? (c.comment.slice(0, maxCommentLength) + '...') : c.comment));
 
         return head + `
-        <p class="text-theme-auto my-1 mx-0 p-0" style="white-space: pre-wrap !important; font-size: 0.95rem;" data-comment="${util.base64Encode(c.comment)}" id="content-${c.uuid}">${data}</p>
+        <p dir="auto" class="text-theme-auto my-1 mx-0 p-0" style="white-space: pre-wrap !important; font-size: 0.95rem;" data-comment="${util.base64Encode(c.comment)}" id="content-${c.uuid}">${data}</p>
         ${moreMaxLength ? `<p class="d-block mb-2 mt-0 mx-0 p-0"><a class="text-theme-auto" role="button" style="font-size: 0.85rem;" data-show="false" onclick="undangan.comment.showMore(this, '${c.uuid}')">Selengkapnya</a></p>` : ''}`;
     };
 
@@ -203,19 +203,13 @@ export const card = (() => {
      * @param {ReturnType<typeof dto.getCommentResponse>[]} cs
      * @returns {Promise<string>}
      */
-    const renderContentMany = (cs) => {
-        return gif.prepareCache()
-            .then(() => Promise.all(cs.map((i) => renderContent(i))))
-            .then((r) => r.join(''));
-    };
+    const renderContentMany = (cs) => Promise.all(cs.map((i) => renderContent(i))).then((r) => r.join(''));
 
     /**
      * @param {ReturnType<typeof dto.getCommentResponse>} cs
      * @returns {Promise<string>}
      */
-    const renderContentSingle = (cs) => {
-        return gif.prepareCache().then(() => renderContent(cs));
-    };
+    const renderContentSingle = (cs) => renderContent(cs);
 
     /**
      * @param {string} id 

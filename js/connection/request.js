@@ -17,44 +17,63 @@ export const defaultJSON = {
     'Content-Type': 'application/json'
 };
 
-export const cacheName = 'request';
-
-const singleton = (() => {
+export const pool = (() => {
     /**
-     * @type {Promise<Cache>|null}
+     * @type {Map<string, Cache>|null}
      */
-    let instance = null;
+    let cachePool = null;
 
     return {
         /**
-         * @returns {Promise<Cache>}
+         * @param {string} name
+         * @returns {Cache}
          */
-        getInstance: () => {
-            if (!instance) {
-                instance = window.caches.open(cacheName);
+        getInstance: (name) => {
+            if (!cachePool || !cachePool.has(name)) {
+                throw new Error(`please init cache first: ${name}`);
             }
 
-            return instance;
+            return cachePool.get(name);
         },
-        purge: () => {
-            instance = null;
+        /**
+         * @param {string} name 
+         * @returns {void}
+         */
+        purge: (name) => {
+            cachePool.set(name, null);
+            cachePool.delete(name);
+        },
+        /**
+         * @param {function} callback
+         * @param {string[]} lists 
+         * @returns {void}
+         */
+        init: (callback, lists) => {
+            cachePool = new Map();
+
+            if (!window.isSecureContext) {
+                throw new Error('this application required secure context');
+            }
+
+            Promise.all(lists.concat(['request']).map((v) => window.caches.open(v).then((c) => cachePool.set(v, c)))).then(() => callback());
         },
     };
 })();
 
-export const removeCache = async () => {
-    if (!window.isSecureContext) {
-        return;
-    }
-
-    singleton.purge();
-    await window.caches.delete(cacheName);
+/**
+ * @returns {Promise<boolean>}
+ */
+export const removeCache = () => {
+    pool.purge('request');
+    return window.caches.delete('request');
 };
 
 /**
- * @param {Cache} cacheObject 
+ * @param {string} cacheName 
  */
-export const cacheWrapper = (cacheObject) => {
+export const cacheWrapper = (cacheName) => {
+    const cacheObject = pool.getInstance(cacheName);
+
     /**
      * @param {string|URL} input 
      * @param {Response} res 
@@ -63,7 +82,7 @@ export const cacheWrapper = (cacheObject) => {
      * @returns {Response}
      */
     const set = (input, res, forceCache, ttl) => res.clone().arrayBuffer().then((ab) => {
-        if (!res.ok || !window.isSecureContext) {
+        if (!res.ok) {
             return res;
         }
 
@@ -211,7 +230,7 @@ export const request = (method, path) => {
                 });
             });
 
-            if (reqTtl === 0 || !window.isSecureContext || reqNoBody) {
+            if (reqTtl === 0 || reqNoBody) {
                 return wrapperFetch();
             }
 
@@ -220,13 +239,15 @@ export const request = (method, path) => {
                 return wrapperFetch();
             }
 
-            return singleton.getInstance().then(cacheWrapper).then((cw) => cw.has(input).then((res) => {
+            const cw = cacheWrapper('request');
+
+            return cw.has(input).then((res) => {
                 if (res) {
                     return Promise.resolve(res);
                 }
 
                 return cw.del(input).then(wrapperFetch).then((r) => cw.set(input, r, reqForceCache, reqTtl));
-            }));
+            });
         };
 
         if (reqRetry === 0 || reqDelay === 0) {
@@ -263,11 +284,11 @@ export const request = (method, path) => {
 
     /**
      * @param {Response} res 
-     * @returns {Response}
+     * @returns {Promise<Response>}
      */
     const baseDownload = (res) => {
         if (res.status !== HTTP_STATUS_OK) {
-            return res;
+            return Promise.resolve(res);
         }
 
         const exist = document.querySelector('a[download]');
@@ -308,11 +329,11 @@ export const request = (method, path) => {
 
             return baseFetch(new URL(path, document.body.getAttribute('data-url'))).then((res) => {
                 if (downName && res.ok) {
-                    return {
-                        code: res.status,
-                        data: baseDownload(res),
+                    return baseDownload(res).then((r) => ({
+                        code: r.status,
+                        data: r,
                         error: null,
-                    };
+                    }));
                 }
 
                 return res.json().then((json) => {
@@ -423,7 +444,7 @@ export const request = (method, path) => {
          */
         default(header = null) {
             req.headers = new Headers(header ?? {});
-            return baseFetch(path).then((res) => downName ? baseDownload(res) : res);
+            return baseFetch(path).then((res) => downName ? baseDownload(res) : Promise.resolve(res));
         },
         /**
          * @param {string} token

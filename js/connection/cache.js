@@ -1,30 +1,5 @@
 import { request, cacheWrapper, HTTP_GET } from './request.js';
 
-const objectPool = (() => {
-    /**
-     * @type {Map<string, Promise<Cache>>|null}
-     */
-    let cachePool = null;
-
-    return {
-        /**
-         * @param {string} name
-         * @returns {Promise<Cache>}
-         */
-        getInstance: (name) => {
-            if (!cachePool) {
-                cachePool = new Map();
-            }
-
-            if (!cachePool.has(name)) {
-                cachePool.set(name, window.caches.open(name));
-            }
-
-            return cachePool.get(name);
-        },
-    };
-})();
-
 export const cache = (cacheName) => {
 
     /**
@@ -38,49 +13,38 @@ export const cache = (cacheName) => {
     const inFlightRequests = new Map();
 
     /**
-     * @type {Cache|null}
+     * @type {ReturnType<typeof cacheWrapper>}
      */
-    let cacheObject = null;
+    const cw = cacheWrapper(cacheName);
 
     let ttl = 1000 * 60 * 60 * 6;
 
     let forceCache = false;
 
     /**
-     * @returns {Promise<Cache>|null}
-     */
-    const open = async () => {
-        if (!cacheObject && window.isSecureContext) {
-            cacheObject = await objectPool.getInstance(cacheName);
-        }
-
-        return cacheObject;
-    };
-
-    /**
      * @param {string|URL} input 
      * @param {Response} res 
      * @returns {Response}
      */
-    const set = (input, res) => open().then(cacheWrapper).then((cw) => {
+    const set = (input, res) => {
         if (!res.ok) {
             throw new Error(res.statusText);
         }
 
         return cw.set(input, res, forceCache, ttl);
-    });
+    };
 
     /**
      * @param {string|URL} input 
      * @returns {Promise<Response|null>}
      */
-    const has = (input) => open().then(cacheWrapper).then((cw) => cw.has(input));
+    const has = (input) => cw.has(input);
 
     /**
      * @param {string|URL} input 
      * @returns {Promise<boolean>}
      */
-    const del = (input) => open().then(cacheWrapper).then((cw) => cw.del(input));
+    const del = (input) => cw.del(input);
 
     /**
      * @param {string} input
@@ -101,8 +65,8 @@ export const cache = (cacheName) => {
          */
         const fetchPut = () => request(HTTP_GET, input).withCancel(cancel).withRetry().default();
 
-        const inflightPromise = open()
-            .then(() => window.isSecureContext ? has(input).then((res) => res ? Promise.resolve(res) : del(input).then(fetchPut).then((r) => set(input, r))) : fetchPut())
+        const inflightPromise = has(input)
+            .then((res) => res ? Promise.resolve(res) : del(input).then(fetchPut).then((r) => set(input, r)))
             .then((r) => r.blob())
             .then((b) => objectUrls.set(input, URL.createObjectURL(b)))
             .then(() => objectUrls.get(input))
@@ -117,12 +81,8 @@ export const cache = (cacheName) => {
      * @param {Promise<void>|null} cancel
      * @returns {Promise<void>}
      */
-    const run = (items, cancel = null) => open().then(() => {
+    const run = (items, cancel = null) => {
         const uniq = new Map();
-
-        if (!window.isSecureContext) {
-            console.warn('Cache is not supported in insecure context');
-        }
 
         if (items.length === 0) {
             return Promise.resolve();
@@ -143,7 +103,7 @@ export const cache = (cacheName) => {
                 return r;
             })
         ));
-    });
+    };
 
     /**
      * @param {string} input

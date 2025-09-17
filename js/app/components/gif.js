@@ -80,11 +80,6 @@ export const gif = (() => {
     };
 
     /**
-     * @returns {Promise<void>}
-     */
-    const prepareCache = () => c.open();
-
-    /**
      * @param {string} url
      * @returns {Promise<string>}
      */
@@ -562,6 +557,5 @@ export const gif = (() => {
         buttonCancel,
         removeGifSearch,
         removeButtonBack,
-        prepareCache,
     };
 })();
