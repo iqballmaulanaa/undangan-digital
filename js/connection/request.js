@@ -37,18 +37,20 @@ export const pool = (() => {
         },
         /**
          * @param {string} name 
-         * @returns {void}
+         * @returns {Promise<void>}
          */
-        purge: (name) => {
+        restart: async (name) => {
             cachePool.set(name, null);
             cachePool.delete(name);
+            await window.caches.delete(name);
+            await window.caches.open(name).then((c) => cachePool.set(name, c));
         },
         /**
          * @param {function} callback
          * @param {string[]} lists 
          * @returns {void}
          */
-        init: (callback, lists) => {
+        init: (callback, lists = []) => {
             cachePool = new Map();
 
             if (!window.isSecureContext) {
@@ -59,14 +61,6 @@ export const pool = (() => {
         },
     };
 })();
-
-/**
- * @returns {Promise<boolean>}
- */
-export const removeCache = () => {
-    pool.purge('request');
-    return window.caches.delete('request');
-};
 
 /**
  * @param {string} cacheName 
