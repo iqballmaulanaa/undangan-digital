@@ -37,9 +37,12 @@ export const pool = (() => {
         },
         /**
          * @param {string} name 
-         * @returns {boolean}
+         * @returns {void}
          */
-        purge: (name) => cachePool.delete(name),
+        purge: (name) => {
+            cachePool.set(name, null);
+            cachePool.delete(name);
+        },
         /**
          * @param {function} callback
          * @param {string[]} lists 
@@ -57,9 +60,12 @@ export const pool = (() => {
     };
 })();
 
-export const removeCache = async () => {
+/**
+ * @returns {Promise<boolean>}
+ */
+export const removeCache = () => {
     pool.purge('request');
-    await window.caches.delete('request');
+    return window.caches.delete('request');
 };
 
 /**
