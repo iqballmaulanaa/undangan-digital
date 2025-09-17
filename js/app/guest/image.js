@@ -108,9 +108,7 @@ export const image = (() => {
      * @returns {void}
      */
     const download = (blobUrl) => {
-        const parts = window.location.hostname.split('.');
-        const hostname = parts.length < 2 ? window.location.hostname : parts[parts.length - 2];
-        c.download(blobUrl, `${hostname}_image_${Date.now()}`);
+        c.download(blobUrl, `${window.location.hostname}_image_${Date.now()}`);
     };
 
     /**
