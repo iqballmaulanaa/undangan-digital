@@ -17,6 +17,8 @@ export const defaultJSON = {
     'Content-Type': 'application/json'
 };
 
+export const cacheRequest = 'request';
+
 export const pool = (() => {
     /**
      * @type {Map<string, Cache>|null}
@@ -51,13 +53,12 @@ export const pool = (() => {
          * @returns {void}
          */
         init: (callback, lists = []) => {
-            cachePool = new Map();
-
             if (!window.isSecureContext) {
                 throw new Error('this application required secure context');
             }
 
-            Promise.all(lists.concat(['request']).map((v) => window.caches.open(v).then((c) => cachePool.set(v, c)))).then(() => callback());
+            cachePool = new Map();
+            Promise.all(lists.concat([cacheRequest]).map((v) => window.caches.open(v).then((c) => cachePool.set(v, c)))).then(() => callback());
         },
     };
 })();
@@ -73,7 +74,7 @@ export const cacheWrapper = (cacheName) => {
      * @param {Response} res 
      * @param {boolean} forceCache
      * @param {number} ttl
-     * @returns {Response}
+     * @returns {Promise<Response>}
      */
     const set = (input, res, forceCache, ttl) => res.clone().arrayBuffer().then((ab) => {
         if (!res.ok) {
@@ -91,6 +92,10 @@ export const cacheWrapper = (cacheName) => {
             if (!forceCache && headers.has('Expires')) {
                 const expTime = new Date(headers.get('Expires'));
                 ttl = Math.max(0, expTime.getTime() - now.getTime());
+            }
+
+            if (ttl === 0) {
+                throw new Error('Cache max age cannot be 0');
             }
 
             headers.set('Cache-Control', `public, max-age=${Math.floor(ttl / 1000)}`);
@@ -233,7 +238,7 @@ export const request = (method, path) => {
                 return wrapperFetch();
             }
 
-            const cw = cacheWrapper('request');
+            const cw = cacheWrapper(cacheRequest);
 
             return cw.has(input).then((res) => {
                 if (res) {

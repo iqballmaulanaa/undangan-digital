@@ -24,7 +24,7 @@ export const cache = (cacheName) => {
     /**
      * @param {string|URL} input 
      * @param {Response} res 
-     * @returns {Response}
+     * @returns {Promise<Response>}
      */
     const set = (input, res) => {
         if (!res.ok) {

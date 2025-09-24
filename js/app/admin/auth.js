@@ -3,7 +3,7 @@ import { bs } from '../../libs/bootstrap.js';
 import { dto } from '../../connection/dto.js';
 import { storage } from '../../common/storage.js';
 import { session } from '../../common/session.js';
-import { pool, request, HTTP_GET, HTTP_STATUS_OK } from '../../connection/request.js';
+import { pool, cacheRequest, request, HTTP_GET, HTTP_STATUS_OK } from '../../connection/request.js';
 
 export const auth = (() => {
 
@@ -42,7 +42,7 @@ export const auth = (() => {
      * @returns {Promise<void>}
      */
     const clearSession = async () => {
-        await pool.restart('request');
+        await pool.restart(cacheRequest);
 
         user.clear();
         session.logout();
