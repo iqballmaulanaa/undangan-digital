@@ -123,6 +123,9 @@ export const video = (() => {
                 observer.observe(vid);
                 progress.complete('video');
             });
+        }).finally(() => {
+            vid.style.removeProperty('height');
+            wrap.style.removeProperty('height');
         });
     };
 
