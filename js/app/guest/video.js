@@ -49,16 +49,16 @@ export const video = (() => {
          * @param {Response} res 
          * @returns {Promise<Response>}
          */
-        const resToVideo = (res) => {
-            vid.addEventListener('loadedmetadata', () => {
-                document.getElementById('video-love-stroy-loading')?.remove();
-            }, { once: true });
+        const resToVideo = (res) => res.clone().blob().then((b) => {
+            const loaded = new Promise((r) => vid.addEventListener('loadedmetadata', r, { once: true }));
+            vid.preload = 'auto';
+            vid.src = URL.createObjectURL(b);
 
-            return res.clone().blob().then((b) => {
-                vid.src = URL.createObjectURL(b);
+            return loaded.then(() => {
+                document.getElementById('video-love-stroy-loading')?.remove();
                 return res;
             });
-        };
+        });
 
         /**
          * @returns {Promise<Response>}
@@ -103,7 +103,6 @@ export const video = (() => {
                 vid.disablePictureInPicture = true;
                 vid.controlsList = 'noremoteplayback nodownload noplaybackrate';
 
-                vid.load();
                 observer.observe(vid);
                 return res;
             }).catch((err) => {
