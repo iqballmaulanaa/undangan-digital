@@ -38,27 +38,18 @@ export const video = (() => {
 
         const observer = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting ? vid.play() : vid.pause()));
 
-        vid.addEventListener('error', () => progress.invalid('video'));
-        vid.addEventListener('loadedmetadata', () => {
-            const height = vid.getBoundingClientRect().width * (vid.videoHeight / vid.videoWidth);
-            vid.style.height = `${height}px`;
-            wrap.style.height = `${height}px`;
-        });
-
         /**
-         * @param {Response} res 
-         * @returns {Promise<Response>}
+         * @param {Blob} b
+         * @returns {void}
          */
-        const resToVideo = (res) => res.clone().blob().then((b) => {
-            const loaded = new Promise((r) => vid.addEventListener('loadedmetadata', r, { once: true }));
+        const prepareVideo = (b) => {
             vid.preload = 'auto';
+            vid.controls = true;
+            vid.disableRemotePlayback = true;
+            vid.disablePictureInPicture = true;
+            vid.controlsList = 'noremoteplayback nodownload noplaybackrate';
             vid.src = URL.createObjectURL(b);
-
-            return loaded.then(() => {
-                document.getElementById('video-love-stroy-loading')?.remove();
-                return res;
-            });
-        });
+        };
 
         /**
          * @returns {Promise<Response>}
@@ -81,6 +72,7 @@ export const video = (() => {
                     throw new Error('failed to fetch video');
                 }
 
+                vid.addEventListener('error', () => progress.invalid('video'));
                 const loaded = new Promise((r) => vid.addEventListener('loadedmetadata', r, { once: true }));
 
                 vid.src = util.escapeHtml(src);
@@ -89,7 +81,12 @@ export const video = (() => {
                 return loaded;
             }).then(() => {
                 vid.pause();
+                vid.currentTime = 0;
                 progress.complete('video');
+
+                const height = vid.getBoundingClientRect().width * (vid.videoHeight / vid.videoWidth);
+                vid.style.height = `${height}px`;
+                wrap.style.height = `${height}px`;
 
                 return request(HTTP_GET, src).withRetry().withProgressFunc((a, b) => {
                     const result = Number((a / b) * 100).toFixed(0) + '%';
@@ -97,15 +94,12 @@ export const video = (() => {
                     bar.style.width = result;
                     inf.innerText = result;
                 }).default();
-            }).then(resToVideo).then((res) => {
-                vid.controls = true;
-                vid.disableRemotePlayback = true;
-                vid.disablePictureInPicture = true;
-                vid.controlsList = 'noremoteplayback nodownload noplaybackrate';
-
-                observer.observe(vid);
-                return res;
-            }).catch((err) => {
+            }).then((res) => res.clone().blob().then((b) => {
+                const loaded = new Promise((r) => vid.addEventListener('loadedmetadata', r, { once: true }));
+                prepareVideo(b);
+                vid.load();
+                return loaded.then(() => res);
+            })).catch((err) => {
                 bar.style.backgroundColor = 'red';
                 inf.innerText = `Error loading video`;
                 console.error(err);
@@ -117,14 +111,17 @@ export const video = (() => {
                 return c.del(src).then(fetchBasic).then((r) => c.set(src, r));
             }
 
-            return resToVideo(res).then(() => {
+            return res.blob().then((b) => {
+                const loaded = new Promise((r) => vid.addEventListener('loadedmetadata', r, { once: true }));
+                prepareVideo(b);
                 wrap.appendChild(vid);
-                observer.observe(vid);
-                progress.complete('video');
+                return loaded.then(() => progress.complete('video'));
             });
-        }).finally(() => {
+        }).then(() => {
+            observer.observe(vid);
             vid.style.removeProperty('height');
             wrap.style.removeProperty('height');
+            document.getElementById('video-love-stroy-loading')?.remove();
         });
     };
 
