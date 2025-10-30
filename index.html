@@ -91,60 +91,82 @@
     <!-- Root Invitation -->
     <div class="row m-0 p-0 opacity-0" id="root">
 
-        <!-- Desktop mode -->
-        <div class="sticky-top vh-100 d-none d-sm-block col-sm-5 col-md-6 col-lg-7 col-xl-8 col-xxl-9 overflow-y-hidden m-0 p-0">
-            <div class="position-relative bg-white-black d-flex justify-content-center align-items-center vh-100">
-                <div class="d-flex position-absolute w-100 h-100">
-                    <div class="position-relative overflow-hidden vw-100">
-                        <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
-                            <img src="./assets/images/placeholder.webp" data-src="https://picsum.photos/1000/1000?random=7" alt="bg" class="bg-cover-home" style="mask-image: none; opacity: 30%;">
-                        </div>
-                        <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
-                            <img src="./assets/images/placeholder.webp" data-src="https://picsum.photos/1000/1000?random=8" alt="bg" class="bg-cover-home" style="mask-image: none; opacity: 30%;">
-                        </div>
-                        <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
-                            <img src="./assets/images/placeholder.webp" data-src="https://picsum.photos/1000/1000?random=9" alt="bg" class="bg-cover-home" style="mask-image: none; opacity: 30%;">
-                        </div>
-                    </div>
+<!-- Desktop mode -->
+<div class="sticky-top vh-100 d-none d-sm-block col-sm-5 col-md-6 col-lg-7 col-xl-8 col-xxl-9 overflow-y-hidden m-0 p-0">
+    <div class="position-relative bg-white-black d-flex justify-content-center align-items-center vh-100">
+        <div class="d-flex position-absolute w-100 h-100">
+            <div class="position-relative overflow-hidden vw-100">
+                <!-- Semua slide menggunakan gambar lokal -->
+                <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
+                    <img src="./assets/images/placeholder.webp" 
+                         data-src="./assets/images/prewedding-casual-putih-indoor.jpg" 
+                         alt="bg" class="bg-cover-home" 
+                         style="mask-image: none; opacity: 30%;">
                 </div>
-
-                <div class="text-center p-4 bg-overlay-auto rounded-5">
-                    <h2 class="font-esthetic mb-4" style="font-size: 2rem;">Wahyu &amp; Riski</h2>
-                    <p class="m-0" style="font-size: 1rem;">Rabu, 15 Maret 2023</p>
+                <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
+                    <img src="./assets/images/placeholder.webp" 
+                         data-src="./assets/images/prewedding-casual-putih-indoor.jpg" 
+                         alt="bg" class="bg-cover-home" 
+                         style="mask-image: none; opacity: 30%;">
+                </div>
+                <div class="position-absolute h-100 w-100 slide-desktop" style="opacity: 0;">
+                    <img src="./assets/images/placeholder.webp" 
+                         data-src="./assets/images/prewedding-casual-putih-indoor.jpg" 
+                         alt="bg" class="bg-cover-home" 
+                         style="mask-image: none; opacity: 30%;">
                 </div>
             </div>
         </div>
 
+        <div class="text-center p-4 bg-overlay-auto rounded-5">
+            <h2 class="font-esthetic mb-4" style="font-size: 2rem;">Rahmat Syaifullah &amp; Ananda Riskia</h2>
+            <p class="m-0" style="font-size: 1rem;">Kamis, 30 Oktober 2025</p>
+        </div>
+    </div>
+</div>
+
+
+
         <!-- Smartphone mode -->
-        <div class="col-sm-7 col-md-6 col-lg-5 col-xl-4 col-xxl-3 m-0 p-0">
-            <!-- Main Content -->
-            <main data-bs-spy="scroll" data-bs-target="#navbar-menu" data-bs-root-margin="25% 0% 0% 0%" data-bs-smooth-scroll="true" tabindex="0">
+<div class="col-sm-7 col-md-6 col-lg-5 col-xl-4 col-xxl-3 m-0 p-0">
+    <!-- Main Content -->
+    <main data-bs-spy="scroll" data-bs-target="#navbar-menu" data-bs-root-margin="25% 0% 0% 0%" data-bs-smooth-scroll="true" tabindex="0">
 
-                <!-- Home -->
-                <section id="home" class="bg-light-dark position-relative overflow-hidden p-0 m-0">
-                    <img src="./assets/images/placeholder.webp" data-src="./assets/images/bg.webp" alt="bg" class="position-absolute opacity-25 top-50 start-50 translate-middle bg-cover-home">
+        <!-- Home -->
+        <section id="home" class="bg-light-dark position-relative overflow-hidden p-0 m-0">
+            <img src="./assets/images/placeholder.webp" data-src="./assets/images/bg.webp" alt="bg" class="position-absolute opacity-25 top-50 start-50 translate-middle bg-cover-home">
 
-                    <div class="position-relative text-center bg-overlay-auto" style="background-color: unset;">
-                        <h1 class="font-esthetic pt-5 pb-4 fw-medium" style="font-size: 2.25rem;">Undangan Pernikahan</h1>
+            <div class="position-relative text-center bg-overlay-auto" style="background-color: unset;">
+                <h1 class="font-esthetic pt-5 pb-4 fw-medium" style="font-size: 2.25rem;">Undangan Pernikahan</h1>
 
-                        <img src="./assets/images/placeholder.webp" data-src="./assets/images/bg.webp" alt="bg" onclick="undangan.guest.modal(this)" class="img-center-crop rounded-circle border border-3 border-light shadow my-4 mx-auto cursor-pointer">
+                <!-- Foto profil -->
+                <img 
+                    src="./assets/images/prewedding-casual-putih-indoor.jpg" 
+                    alt="Foto Pasangan" 
+                    onclick="undangan.guest.modal(this)" 
+                    class="img-center-crop rounded-circle border border-3 border-light shadow my-4 mx-auto cursor-pointer"
+                >
 
-                        <h2 class="font-esthetic my-4" style="font-size: 2.25rem;">Wahyu &amp; Riski</h2>
-                        <p class="my-2" style="font-size: 1.25rem;">Rabu, 15 Maret 2023</p>
+                <h2 class="font-esthetic my-4" style="font-size: 2.25rem;">Rahmat Syaifullah &amp; Ananda Riskia</h2>
+                <p class="my-2" style="font-size: 1.25rem;">Kamis, 30 Oktober 2025</p>
 
-                        <button class="btn btn-outline-auto btn-sm shadow rounded-pill px-3 py-1" style="font-size: 0.825rem;">
-                            <i class="fa-solid fa-calendar-check me-2"></i>Save Google Calendar
-                        </button>
+                <button class="btn btn-outline-auto btn-sm shadow rounded-pill px-3 py-1" style="font-size: 0.825rem;">
+                    <i class="fa-solid fa-calendar-check me-2"></i>Save Google Calendar
+                </button>
 
-                        <div class="d-flex justify-content-center align-items-center mt-4 mb-2">
-                            <div class="mouse-animation border border-secondary border-2 rounded-5 px-2 py-1 opacity-50">
-                                <div class="scroll-animation rounded-4 bg-secondary"></div>
-                            </div>
-                        </div>
-
-                        <p class="pb-4 m-0 text-secondary" style="font-size: 0.825rem;">Scroll Down</p>
+                <div class="d-flex justify-content-center align-items-center mt-4 mb-2">
+                    <div class="mouse-animation border border-secondary border-2 rounded-5 px-2 py-1 opacity-50">
+                        <div class="scroll-animation rounded-4 bg-secondary"></div>
                     </div>
-                </section>
+                </div>
+
+                <p class="pb-4 m-0 text-secondary" style="font-size: 0.825rem;">Scroll Down</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+
 
                 <!-- Wave Separator -->
                 <div class="svg-wrapper">
@@ -653,21 +675,32 @@
         </div>
     </div>
 
-    <!-- Welcome Page -->
-    <div class="loading-page bg-white-black" id="welcome" style="opacity: 0;">
-        <div class="d-flex justify-content-center align-items-center vh-100 overflow-y-auto">
-            <div class="d-flex flex-column text-center">
-                <h2 class="font-esthetic mb-4" style="font-size: 2.25rem;">The Wedding Of</h2>
+   <!-- Welcome Page -->
+<div class="loading-page bg-white-black" id="welcome" style="opacity: 0;">
+    <div class="d-flex justify-content-center align-items-center vh-100 overflow-y-auto">
+        <div class="d-flex flex-column text-center">
+            <h2 class="font-esthetic mb-4" style="font-size: 2.25rem;">The Wedding Of</h2>
 
-                <img src="./assets/images/placeholder.webp" data-src="./assets/images/bg.webp" alt="background" class="img-center-crop rounded-circle border border-3 border-light shadow mb-4 mx-auto">
+            <!-- Gambar diganti ke foto prewedding pasangan -->
+            <img 
+                src="./assets/images/placeholder.webp" 
+                data-src="./assets/images/prewedding-casual-putih-indoor.jpg" 
+                alt="Foto Pasangan" 
+                class="img-center-crop rounded-circle border border-3 border-light shadow mb-4 mx-auto"
+            >
 
-                <h2 class="font-esthetic mb-4" style="font-size: 2.25rem;">Wahyu &amp; Riski</h2>
-                <div id="guest-name" data-message="Kepada Yth Bapak/Ibu/Saudara/i"></div>
+            <!-- Nama pasangan diubah -->
+            <h2 class="font-esthetic mb-4" style="font-size: 2.25rem;">Rahmat Syaifullah &amp; Ananda Riskia</h2>
 
-                <button type="button" class="btn btn-light shadow rounded-4 mt-3 mx-auto" onclick="undangan.guest.open(this)"><i class="fa-solid fa-envelope-open fa-bounce me-2"></i>Open Invitation</button>
-            </div>
+            <div id="guest-name" data-message="Kepada Yth Bapak/Ibu/Saudara/i"></div>
+
+            <button type="button" class="btn btn-light shadow rounded-4 mt-3 mx-auto" onclick="undangan.guest.open(this)">
+                <i class="fa-solid fa-envelope-open fa-bounce me-2"></i>Open Invitation
+            </button>
         </div>
     </div>
+</div>
+
 
     <!-- Button Group -->
     <div class="d-flex position-fixed flex-column" style="bottom: 10vh; right: 2vh; z-index: 1030;">
